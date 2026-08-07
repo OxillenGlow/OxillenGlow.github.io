@@ -1,0 +1,875 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MtSharpGrain - A Moddable Sandbox Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6bff;
+            --primary-dark: #3a5bef;
+            --secondary: #6c5ce7;
+            --accent: #fd79a8;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #f8f9fa;
+            --lighter: #e9ecef;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e17055;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Sc.png') center/cover no-repeat;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(74, 107, 255, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: var(--lighter);
+            margin-bottom: 1rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+
+        .badge:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Download Button */
+        .download-section {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, rgba(74, 107, 255, 0.1) 0%, rgba(108, 92, 231, 0.1) 100%);
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 1.5rem 3rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(74, 107, 255, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(74, 107, 255, 0.6);
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn .icon {
+            margin-right: 10px;
+        }
+
+        .platforms {
+            margin-top: 1rem;
+            color: var(--lighter);
+            font-size: 1rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .feature-card p {
+            color: var(--lighter);
+            line-height: 1.8;
+        }
+
+        /* Screenshots Section */
+        .screenshots {
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .screenshot-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 16/9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 40px rgba(74, 107, 255, 0.4);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .screenshot-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .screenshot-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 1.5rem 1rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Modal for full-size images */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: relative;
+            margin: 2% auto;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(255,255,255,0.2);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--danger);
+        }
+
+        .caption {
+            text-align: center;
+            padding: 1rem;
+            color: var(--light);
+            font-size: 1.1rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            line-height: 2;
+            color: var(--lighter);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Links Section */
+        .links {
+            padding: 3rem 2rem;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .links-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .link-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .link-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+        }
+
+        .link-card a {
+            color: var(--light);
+            text-decoration: none;
+            display: block;
+        }
+
+        .link-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .link-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .link-card p {
+            color: var(--lighter);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .footer h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .footer p {
+            color: var(--lighter);
+            margin-bottom: 1rem;
+        }
+
+        .tech-used {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tech-item {
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--lighter);
+        }
+
+        /* ASCII Art */
+        .ascii-art {
+            background: rgba(0,0,0,0.5);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 2rem auto;
+            max-width: 800px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--primary);
+            overflow-x: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .tagline {
+                font-size: 1.1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .download-btn {
+                padding: 1.2rem 2.5rem;
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Star animation */
+        .star-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Stars -->
+    <div class="star-container" id="stars"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/content-1.png" alt="MtSharpGrain Logo" class="logo floating">
+            <h1>MtSharpGrain</h1>
+            <p class="tagline">A sandbox, non-voxel, highly modifiable game with smooth interconnected blocks</p>
+            <div class="badges">
+                <a href="https://github.com/OxillenGlow/MtSharpGrain" class="badge">
+                    <img src="https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain" alt="Last Commit">
+                </a>
+                <a href="https://github.com/OxillenGlow/MtSharpGrain/stargazers" class="badge">
+                    <img src="https://img.shields.io/github/stars/OxillenGlow/MtSharpGrain?label=Stars" alt="GitHub Stars">
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Download Section -->
+    <section class="download-section">
+        <a href="https://github.com/OxillenGlow/MtSharpGrain/releases" class="download-btn">
+            <span class="icon">⬇</span>
+            DOWNLOAD NOW
+        </a>
+        <p class="platforms">Available for MacOS, Windows, and Linux (Debian derived)</p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2 class="section-title">♦︎ What Makes MtSharpGrain Special?</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>⏥ Semi-Smooth Node Meshes</h3>
+                <p>Blocks connect with rounded transitions rather than hard cube edges, creating a unique visual style that's smooth and natural.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>⚄ JavaScript Modding System</h3>
+                <p>Full-powered modding via GraalJS. Control everything from player location to creating new entities. Perfect for making your own mini-games!</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>⌘ Console Command System</h3>
+                <p>Use commands like <code>!place</code> and <code>!destroy</code> to interact with the game world. More commands coming soon!</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>△ Cross-Platform</h3>
+                <p>Play on MacOS, Windows, or Linux. The game is built with Java and OpenGL (LWJGL & JME) for maximum compatibility.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Customizable</h3>
+                <p>As a single developer, I can't make everything. That's why modding is at the heart of MtSharpGrain - anyone can create their own content!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="screenshots">
+        <h2 class="section-title" </h2></h2>Screenshots & Showcase</h2>
+
+        <div class="screenshots-grid">
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/jVS-ingame-demo.png', 'Using jVisualScript to break and place blocks')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/jVS-ingame-demo.png" alt="jVisualScript Demo" loading="lazy">
+                <div class="screenshot-caption">Using jVisualScript to break and place blocks</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/CoolArtifacts.png', 'Interesting loading artifacts')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/CoolArtifacts.png" alt="Cool Artifacts" loading="lazy">
+                <div class="screenshot-caption">Interesting to see how it is loading</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/v0.1.0-beta2.png', 'Version 0.1.0 Beta 2')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/v0.1.0-beta2.png" alt="Beta 2" loading="lazy">
+                <div class="screenshot-caption">Version 0.1.0 Beta 2</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Poster.png', 'MtSharpGrain Poster')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Poster.png" alt="Poster" loading="lazy">
+                <div class="screenshot-caption">Dumb poster I made</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Inventory.png', 'Inventory System')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Inventory.png" alt="Inventory" loading="lazy">
+                <div class="screenshot-caption">Current inventory bar design</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Hubs.png', 'Greenhouse Hubs')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/Hubs.png" alt="Hubs" loading="lazy">
+                <div class="screenshot-caption">Small greenhouses with grass inside</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/ConffetiMod.png', 'Confetti Mod')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/ConffetiMod.png" alt="Confetti Mod" loading="lazy">
+                <div class="screenshot-caption">Confetti Mod in action</div>
+            </div>
+
+            <div class="screenshot-item" onclick="openModal('https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/BlockTrail-js-demo.png', 'Block Trail JavaScript Demo')">
+                <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/BlockTrail-js-demo.png" alt="Block Trail Demo" loading="lazy">
+                <div class="screenshot-caption">Block Trail JavaScript Demo</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="Full size screenshot">
+            <div class="caption" id="modalCaption"></div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section class="about">
+        <h2>␦ About MtSharpGrain</h2>
+        <p>
+            <img src="https://raw.githubusercontent.com/OxillenGlow/MtSharpGrain/main/Pictures/content-1.png" alt="Content Icon" style="width: 30px; height: 30px; vertical-align: middle; margin-right: 10px;">
+            This project aims to create a futuristic gridded sandbox game using shaders, environment effects, and interconnected nodes. While the current version falls short in some areas, it's constantly improving with new features and refinements.
+        </p>
+        <p>
+            The game is built 100% in Java using OpenGL (LWJGL) and jMonkeyEngine, providing a solid foundation for performance and extensibility.
+        </p>
+    </section>
+
+    <!-- ASCII Art -->
+    <div class="ascii-art">
+<pre>
+      m   m           s s s s            g g g
+    m   m   m       s                  g
+    m   m   m         s s s            g   g g g
+    m       m               s          g       g
+    m       m t     s s s s   harp       g g g   rain
+</pre>
+    </div>
+
+    <!-- Links Section -->
+    <section class="links">
+        <div class="links-container">
+            <div class="link-card">
+                <a href="https://github.com/OxillenGlow/MtSharpGrain/wiki" target="_blank">
+                    <div class="link-icon">📚</div>
+                    <h3>Wiki</h3>
+                    <p>Learn about modding and game features</p>
+                </a>
+            </div>
+
+            <div class="link-card">
+                <a href="https://github.com/OxillenGlow/MtSharpGrain/discussions" target="_blank">
+                    <div class="link-icon">💬</div>
+                    <h3>Discussions</h3>
+                    <p>Join the community and share ideas</p>
+                </a>
+            </div>
+
+            <div class="link-card">
+                <a href="https://github.com/OxillenGlow/MtSharpGrain/releases" target="_blank">
+                    <div class="link-icon">📦</div>
+                    <h3>Releases</h3>
+                    <p>Get the latest version of the game</p>
+                </a>
+            </div>
+
+            <div class="link-card">
+                <a href="https://github.com/OxillenGlow" target="_blank">
+                    <div class="link-icon">🌟</div>
+                    <h3>Other Projects</h3>
+                    <p>Check out my other work</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>🛠️ Built With</h3>
+            <p>MtSharpGrain is made possible by these amazing technologies and assets:</p>
+
+            <div class="tech-used">
+                <span class="tech-item">JavaMonkeyEngine</span>
+                <span class="tech-item">LWJGL</span>
+                <span class="tech-item">jme-igui</span>
+                <span class="tech-item">GraalJS</span>
+                <span class="tech-item">Neuroph</span>
+                <span class="tech-item">jVisualScripting</span>
+                <span class="tech-item">HYPER Asset Pack</span>
+                <span class="tech-item">Kenney Assets</span>
+            </div>
+
+            <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--lighter);">
+                Made by OxillenGlow | Open-source MIT license
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Create animated stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+
+                // Random position
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+
+                // Random size (0.5px to 2px)
+                const size = Math.random() * 1.5 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+
+                // Random animation duration (2s to 8s)
+                const duration = Math.random() * 6 + 2;
+                star.style.setProperty('--duration', duration + 's');
+
+                // Random delay
+                star.style.animationDelay = Math.random() * 5 + 's';
+
+                // Random opacity
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Modal functions
+        function openModal(imageSrc, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modal.style.display = 'block';
+            modalImg.src = imageSrc;
+            modalCaption.textContent = caption;
+
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards and screenshot items
+        document.querySelectorAll('.feature-card, .screenshot-item, .link-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Initialize stars on page load
+        window.addEventListener('load', createStars);
+
+        // Add parallax effect to header
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const header = document.querySelector('.header');
+            if (header) {
+                header.style.backgroundPositionY = scrolled * 0.5 + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
